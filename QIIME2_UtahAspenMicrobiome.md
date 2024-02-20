@@ -131,3 +131,24 @@ qiime taxa barplot \
   --m-metadata-file ~/UtahAspenMicrobiomeMetadata.tsv \
   --o-visualization ~/taxa-bar-plots.qzv
 ```
+
+### Tests for differential abundance of Genus between Site types
+```
+qiime taxa collapse \
+  --i-table ~/AspenMicro_dada2/table.qza \
+  --i-taxonomy ~/AspenMicro_dada2_taxonomy.qza \
+  --p-level 6 \
+  --o-collapsed-table ~/AspenMicro_dada2/table_genus.qza
+
+qiime composition ancombc \
+  --i-table ~/AspenMicro_dada2/table_genus.qza  \
+  --m-metadata-file ~/UtahAspenMicrobiomeMetadata.tsv \
+  --p-formula 'SiteType' \
+  --o-differentials ~/ancombc-SiteType_genus.qza
+
+qiime composition da-barplot \
+  --i-data ~/ancombc-SiteType_genus.qza \
+  --p-significance-threshold 0.001 \
+  --o-visualization ~/ancombc-SiteType_genus.qzv
+```
+scp jan58@vcm-39234.vm.duke.edu:~/ancombc-SiteType_genus.qzv "C:\Users\akeja\OneDrive - Duke University\Documents\Github\Bio557_Metabarcoding"
