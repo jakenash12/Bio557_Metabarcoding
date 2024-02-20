@@ -3,7 +3,7 @@ output:
   html_document:
     df_print: paged
 ---
-## Get your own Linux
+## Get your own Linux virtual machine
 1. Go to [https://vcm.duke.edu/](https://vcm.duke.edu/), login, and click reserve a VM
 ![alt text](./snapshots/DukeVM.png)
 1. Choose Ubuntu Server 20.04
@@ -12,7 +12,7 @@ output:
 \
 \ 
 
-1. Log in in through Terminal (MacOS) or PowerShell (Win). The command prompt may ask if you are sure you want to continue connecting - type "yes"
+1. Log in in through Terminal (MacOS) or PowerShell (Win) using the ssh command and pasting in your NETID@HOSTNAME. Hostname is found in the general information page on the Duke VM website. The command prompt may ask if you are sure you want to continue connecting - type "yes". 
     ```{bash, eval=FALSE}
     ssh NETID@HOSTNAME
     #example: ssh jan58@vcm-39240.vm.duke.edu
