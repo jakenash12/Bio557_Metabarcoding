@@ -67,20 +67,20 @@ qiime demux summarize \
 ### Dada2 for Actual Sequence Variant (ASV) calling (and quality control, read merging, chimera detection)
 ```
 qiime dada2 denoise-paired \
-	--i-demultiplexed-seqs ./AspenMicro_cutadapt/trimmed_sequences.qza \
+	--i-demultiplexed-seqs ~/AspenMicro_cutadapt/trimmed_sequences.qza \
 	--p-trunc-len-f 220 \
 	--p-trunc-len-r 120 \
 	--p-trim-left-f 0 \
 	--p-trim-left-r 0 \
-	--output-dir AspenMicro_dada2
+	--output-dir ~/AspenMicro_dada2
 
 qiime metadata tabulate \
-	--m-input-file ./AspenMicro_dada2/denoising_stats.qza \
-	--o-visualization denoising_stats.qzv
+	--m-input-file ~/AspenMicro_dada2/denoising_stats.qza \
+	--o-visualization ~/denoising_stats.qzv
 
 qiime feature-table summarize \
-	--i-table ./AspenMicro_dada2/table.qza \
-	--o-visualization table_summary.qzv
+	--i-table ~/AspenMicro_dada2/table.qza \
+	--o-visualization ~/table_summary.qzv
 ```
 
 ### Downloads SILVA taxonomic classifier and uses it to classify Dada2 ASVs
@@ -89,7 +89,45 @@ This code is too computationally intensive to run on our virtual machines, so do
 wget https://data.qiime2.org/2023.9/common/silva-138-99-515-806-nb-classifier.qza
 
 qiime feature-classifier classify-sklearn \
-	--i-reads ./AspenMicro_dada2/representative_sequences.qza \
-	--i-classifier silva-138-99-515-806-nb-classifier.qza \
-	--o-classification AspenMicro_dada2_taxonomy.qza
+	--i-reads ~/AspenMicro_dada2/representative_sequences.qza \
+	--i-classifier ~/silva-138-99-515-806-nb-classifier.qza \
+	--o-classification ~/AspenMicro_dada2_taxonomy.qza
+
+#download taxonomic classifications here instead of doing it on your VM
+wget https://github.com/jakenash12/Bio557_Metabarcoding/raw/main/AspenMicro_dada2_taxonomy.qza
+```
+
+### Download metadata file then 
+```
+wget https://github.com/jakenash12/Bio557_Metabarcoding/raw/main/UtahAspenMicrobiomeMetadata.tsv
+
+qiime diversity core-metrics \
+	--i-table ~/AspenMicro_dada2/table.qza \
+	--p-sampling-depth 2016 \
+	--m-metadata-file ~/UtahAspenMicrobiomeMetadata.tsv \
+	--output-dir ~/CoreMetrics
+```
+
+### Tests for differences in ASV richness (i.e. diversity, # of ASVs) and beta diversity
+```
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity ~/CoreMetrics/observed_features_vector.qza \
+  --m-metadata-file ~/UtahAspenMicrobiomeMetadata.tsv \
+  --o-visualization ~/CoreMetrics/richness_significance.qzv
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix ~/CoreMetrics/bray_curtis_distance_matrix.qza \
+  --m-metadata-file ~/UtahAspenMicrobiomeMetadata.tsv \
+  --m-metadata-column SiteType \
+  --o-visualization ~/CoreMetrics/bray-curtis-SiteType-significance.qzv \
+  --p-pairwise
+```
+
+### Generates a taxonomy barplot of data
+```
+qiime taxa barplot \
+  --i-table ~/AspenMicro_dada2/table.qza \
+  --i-taxonomy ~/AspenMicro_dada2_taxonomy.qza \
+  --m-metadata-file ~/UtahAspenMicrobiomeMetadata.tsv \
+  --o-visualization ~/taxa-bar-plots.qzv
 ```
