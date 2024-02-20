@@ -60,8 +60,8 @@ qiime cutadapt trim-paired \
 	--output-dir ~/AspenMicro_cutadapt
 
 qiime demux summarize \
-  --i-data ./AspenMicro_cutadapt/trimmed_sequences.qza \
-  --o-visualization AspenMicro_cutadapt.qzv
+  --i-data ~/AspenMicro_cutadapt/trimmed_sequences.qza \
+  --o-visualization ~/AspenMicro_cutadapt.qzv
 ```
 
 ### Dada2 for Actual Sequence Variant (ASV) calling (and quality control, read merging, chimera detection)
