@@ -1,15 +1,15 @@
 ### Download Utah aspen microbiome dataset
 ```
-curl -L "https://www.dropbox.com/scl/fi/34gh6e7yip8qs4lmhw6y9/UtahAspenMicrobiome.tar.gz?rlkey=1ozl9c6cdzhlkbovs715zlrgr&dl=0" > UtahAspenMicrobiome.tar.gz && tar -xvzf UtahAspenMicrobiome.tar.gz
+curl -L "https://www.dropbox.com/scl/fi/34gh6e7yip8qs4lmhw6y9/UtahAspenMicrobiome.tar.gz?rlkey=1ozl9c6cdzhlkbovs715zlrgr&dl=0" > ~/UtahAspenMicrobiome.tar.gz && tar -xvzf ~/UtahAspenMicrobiome.tar.gz
 ```
 
 ### Prepares a manifest file in tsv (tab separated value) format that is used to import data into QIIME2
 Don't worry about understanding this too much - it is an arcane bash script
 ```
-ls UtahAspenMicrobiome | grep "R1_001.fastq.gz" | sed 's/_R1_001.fastq.gz//g' > filelist
-printf "%s\t%s\t%s\n" "sample-id" "forward-absolute-filepath" "reverse-absolute-filepath" > QIIMEManifest.tsv
-Dir=$(pwd)
-for i in $(cat filelist)
+ls UtahAspenMicrobiome | grep "R1_001.fastq.gz" | sed 's/_R1_001.fastq.gz//g' > ~/filelist
+printf "%s\t%s\t%s\n" "sample-id" "forward-absolute-filepath" "reverse-absolute-filepath" > ~/QIIMEManifest.tsv
+Dir=$(cd && pwd)
+for i in $(cat ~/filelist)
 do
 Sample=$(echo "$i" | awk -F '_' '{print $1}')
 printf "%s\t%s\t%s\n" "${Sample}" "${Dir}/UtahAspenMicrobiome/${i}_R1_001.fastq.gz" "${Dir}/UtahAspenMicrobiome/${i}_R2_001.fastq.gz" >> ${Dir}/QIIMEManifest.tsv
@@ -24,13 +24,13 @@ conda activate qiime2-2024.2
 
 qiime tools import \
   --type 'SampleData[PairedEndSequencesWithQuality]' \
-  --input-path QIIMEManifest.tsv \
-  --output-path AspenMicro.qza \
+  --input-path ~/QIIMEManifest.tsv \
+  --output-path ~/AspenMicro.qza \
   --input-format PairedEndFastqManifestPhred33V2
 
 qiime demux summarize \
-  --i-data AspenMicro.qza \
-  --o-visualization AspenMicro.qzv
+  --i-data ~/AspenMicro.qza \
+  --o-visualization ~/AspenMicro.qzv
 
 #optional: download qzv (or get from github)
 #Log out of VM by typing "exit" and then type following code into shell
@@ -41,7 +41,7 @@ scp NETID@HOSTNAME:./AspenMicro.qzv /local/path/
 Cutadapt can trim primers/adapters from both the 5' (i.e beginning) and 3' (i.e. end) of the forward and reverse reads. Primers/adapters may occur on the 3' end in the event of read through (i.e. the 300 bp read extends to the end of the DNA fragment).
 ```
 qiime cutadapt trim-paired \
-	--i-demultiplexed-sequences AspenMicro.qza \
+	--i-demultiplexed-sequences ~/AspenMicro.qza \
 	--p-adapter-f ATTAGAWACCCBDGTAGTCC \
 	--p-adapter-f AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC \
 	--p-front-f GTGCCAGCMGCCGCGGTAA \
@@ -57,7 +57,7 @@ qiime cutadapt trim-paired \
 	--p-front-r GGACTACHVGGGTWTCTAAT \
 	--p-front-r GTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT \
 	--p-error-rate 0.15 \
-	--output-dir AspenMicro_cutadapt
+	--output-dir ~/AspenMicro_cutadapt
 
 qiime demux summarize \
   --i-data ./AspenMicro_cutadapt/trimmed_sequences.qza \
