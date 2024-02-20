@@ -17,6 +17,7 @@ done
 ```
 
 ### Imports data into QIIME2, then creates summary visualization 
+QIIME2 qzv visualizations need to be downloaded to your personal computer to view at https://view.qiime2.org/. I have provided all of them in the github repo for convenience, but example code to download directly from your VM is below
 ```
 #make sure to activate the QIIME2 environment if its not already activated
 conda activate qiime2-2024.2
@@ -30,6 +31,10 @@ qiime tools import \
 qiime demux summarize \
   --i-data AspenMicro.qza \
   --o-visualization AspenMicro.qzv
+
+#optional: download qzv (or get from github)
+#Log out of VM by typing "exit" and then type following code into shell
+scp NETID@HOSTNAME:./AspenMicro.qzv /local/path/
 ```
 
 ### Cutadapt to trim primers and adapter sequences
@@ -79,6 +84,7 @@ qiime feature-table summarize \
 ```
 
 ### Downloads SILVA taxonomic classifier and uses it to classify Dada2 ASVs
+This code is too computationally intensive to run on our virtual machines, so download the taxonomic classification file AspenMicro_dada2_taxonomy.qza from github instead
 ```
 wget https://data.qiime2.org/2023.9/common/silva-138-99-515-806-nb-classifier.qza
 
