@@ -151,4 +151,3 @@ qiime composition da-barplot \
   --p-significance-threshold 0.001 \
   --o-visualization ~/ancombc-SiteType_genus.qzv
 ```
-scp jan58@vcm-39234.vm.duke.edu:~/ancombc-SiteType_genus.qzv "C:\Users\akeja\OneDrive - Duke University\Documents\Github\Bio557_Metabarcoding"
